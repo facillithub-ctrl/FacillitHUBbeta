@@ -28,25 +28,20 @@ const Login = ({ onShowRegister }) => {
     }
 
     if (authData.user) {
-        // Passo crucial: Buscar o perfil para saber o tipo de usuário
-        const { data: profile, error: profileError } = await supabase
+        const { data: profile } = await supabase
             .from('profiles')
             .select('profile_type')
             .eq('id', authData.user.id)
             .single();
 
-        if (profileError) {
-            showNotification('Erro ao buscar perfil do usuário.', 'error');
-            setLoading(false);
-            return;
-        }
-        
         showNotification('Login realizado com sucesso!');
-
-        // Lógica de redirecionamento baseada no tipo de perfil
         const userType = profile?.profile_type;
+
+        // LÓGICA DE REDIRECIONAMENTO ATUALIZADA
         if (userType === 'Sou aluno(a)' || userType === 'Sou vestibulando(a)') {
             navigate('/dashboard/aluno');
+        } else if (userType === 'Sou professor(a)') {
+            navigate('/dashboard/professor');
         } else {
             navigate('/dashboard/gestor');
         }
