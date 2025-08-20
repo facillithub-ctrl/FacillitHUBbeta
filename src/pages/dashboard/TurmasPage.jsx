@@ -5,8 +5,8 @@ import { useNotification } from '../../contexts/NotificationContext';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 
-// (As funções generateInviteCode e generateStudentEmail continuam as mesmas)
 const generateInviteCode = () => `FHUB-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+
 const generateStudentEmail = (fullName) => {
   if (!fullName) return '';
   const sanitizedName = fullName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '');
@@ -17,7 +17,7 @@ const TurmasPage = () => {
   const { profile } = useAuth();
   const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
-  const [invites, setInvites] = useState([]); // Estado para armazenar os convites
+  const [invites, setInvites] = useState([]);
   const [formData, setFormData] = useState({
     fullName: '',
     birthDate: '',
@@ -25,14 +25,13 @@ const TurmasPage = () => {
     registrationNumber: ''
   });
 
-  // Função para buscar os convites ativos
   const fetchInvites = useCallback(async () => {
     if (!profile?.organization_id) return;
     const { data, error } = await supabase
       .from('invites')
       .select('*')
       .eq('organization_id', profile.organization_id)
-      .eq('is_used', false) // Apenas convites não utilizados
+      .eq('is_used', false)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -42,7 +41,6 @@ const TurmasPage = () => {
     }
   }, [profile, showNotification]);
 
-  // useEffect para buscar os convites quando a página carregar
   useEffect(() => {
     fetchInvites();
   }, [fetchInvites]);
@@ -53,6 +51,11 @@ const TurmasPage = () => {
 
   const handleGenerateInvite = async (e) => {
     e.preventDefault();
+    // Verificação de segurança adicional
+    if (!profile || !profile.organization_id) {
+        showNotification('Seu perfil não está vinculado a uma organização.', 'error');
+        return;
+    }
     setLoading(true);
 
     const newCode = generateInviteCode();
@@ -74,16 +77,27 @@ const TurmasPage = () => {
     } else {
       showNotification(`Código "${newCode}" gerado com sucesso!`);
       setFormData({ fullName: '', birthDate: '', className: '', registrationNumber: '' });
-      fetchInvites(); // Re-busca a lista para exibir o novo código
+      fetchInvites();
     }
     setLoading(false);
   };
+
+  // Se o perfil do gestor não estiver vinculado a uma organização, mostra um aviso
+  if (!profile?.organization_id) {
+    return (
+        <div>
+            <h2 className="text-2xl font-bold text-brand-dark-blue mb-6">Acesso Restrito</h2>
+            <div className="bg-white p-6 rounded-lg shadow-md">
+                <p className="text-red-600">Seu perfil de usuário não está vinculado a nenhuma organização. Por favor, entre em contato com o suporte.</p>
+            </div>
+        </div>
+    )
+  }
 
   return (
     <div>
       <h2 className="text-2xl font-bold text-brand-dark-blue mb-6">Gerenciar Turmas e Convites</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Formulário para gerar códigos */}
         <div className="bg-gray-50 p-6 rounded-lg border">
           <h3 className="text-xl font-semibold mb-4">Gerar Novo Convite de Aluno</h3>
           <form onSubmit={handleGenerateInvite} className="space-y-4">
@@ -98,8 +112,6 @@ const TurmasPage = () => {
             </div>
           </form>
         </div>
-
-        {/* Lista de códigos ativos */}
         <div className="bg-gray-50 p-6 rounded-lg border">
           <h3 className="text-xl font-semibold mb-4">Convites Ativos</h3>
           <div className="space-y-3">
