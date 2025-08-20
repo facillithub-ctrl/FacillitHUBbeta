@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Adicione esta linha para ignorar as variáveis de ambiente
+.env

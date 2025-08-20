@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { supabase } from '../../api/supabaseClient';
+import { useNotification } from '../../contexts/NotificationContext';
+import { useNavigate } from 'react-router-dom'; // Importe o useNavigate
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 
@@ -12,41 +15,53 @@ const SocialButton = ({ children, icon }) => (
 );
 
 const Login = ({ onShowRegister }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { showNotification } = useNotification();
+  const navigate = useNavigate(); // Inicialize o hook
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      showNotification(error.message, 'error');
+    } else {
+      showNotification('Login realizado com sucesso!');
+      navigate('/dashboard/gestor'); // << REDIRECIONAMENTO AQUI
+    }
+
+    setLoading(false);
+  };
+
   return (
-    <div className="space-y-6">
+    <form onSubmit={handleLogin} className="space-y-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-brand-dark-blue">Olá novamente!</h1>
         <p className="mt-2 text-gray-600">Que bom te ver por aqui.</p>
       </div>
-
       <div className="space-y-4">
-        <Input id="email" label="E-mail" type="email" placeholder="seu@email.com" />
-        <Input id="password" label="Senha" type="password" placeholder="Sua senha" />
+        <Input id="email" label="E-mail" type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Input id="password" label="Senha" type="password" placeholder="Sua senha" value={password} onChange={(e) => setPassword(e.target.value)} />
       </div>
-
       <div className="space-y-4">
-        <Button fullWidth={true}>Entrar</Button>
-        <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-                <span className="bg-brand-white px-2 text-gray-500">Ou continue com</span>
-            </div>
-        </div>
-        <div className="space-y-3">
-            <SocialButton>Continuar com Google</SocialButton>
-            <SocialButton>Continuar com Apple</SocialButton>
-        </div>
+        <Button type="submit" fullWidth={true} disabled={loading}>
+          {loading ? 'Entrando...' : 'Entrar'}
+        </Button>
       </div>
-      
       <p className="text-sm text-center text-gray-600">
         Ainda não tem uma conta?{' '}
-        <button onClick={onShowRegister} className="font-semibold text-brand-cyan hover:underline">
+        <button type="button" onClick={onShowRegister} className="font-semibold text-brand-cyan hover:underline">
           Crie uma agora
         </button>
       </p>
-    </div>
+    </form>
   );
 };
 

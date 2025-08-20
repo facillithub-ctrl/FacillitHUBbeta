@@ -1,9 +1,13 @@
 import AppRouter from "./config/AppRouter";
+import { NotificationProvider } from "./contexts/NotificationContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
-  // Por enquanto, nosso App apenas renderiza o gerenciador de rotas.
-  // No futuro, podemos adicionar aqui contextos globais, etc.
-  return <AppRouter />;
+  return (
+    <NotificationProvider>
+      <AppRouter />
+    </NotificationProvider>
+  );
 }
 
 export default App;

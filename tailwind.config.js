@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-import defaultTheme from 'tailwindcss/defaultTheme';
-import tailwindcssForms from '@tailwindcss/forms';
+import tailwindcssForms from '@tailwindcss/forms'; // 1. Importamos o plugin aqui
 
 export default {
   content: [
@@ -17,7 +16,7 @@ export default {
         'brand-black': '#000000',
       },
       fontFamily: {
-        sans: ['Encode Sans', ...defaultTheme.fontFamily.sans],
+        sans: ['Encode Sans', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #012E40, #00BC99)',
@@ -25,6 +24,6 @@ export default {
     },
   },
   plugins: [
-    tailwindcssForms,
+    tailwindcssForms, // 2. E usamos a variável importada aqui, em vez do 'require'
   ],
 }
