@@ -2,11 +2,15 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import AuthPage from '../pages/AuthPage';
+
+// Dashboards
 import DashboardLayout from '../pages/dashboard/DashboardLayout';
+import StudentDashboardLayout from '../pages/dashboard/StudentDashboardLayout';
+
+// Páginas do Gestor
 import HomePage from '../pages/dashboard/HomePage';
 import FacillitEduLayout from '../pages/dashboard/FacillitEduLayout';
 import TurmasPage from '../pages/dashboard/TurmasPage';
-import StudentDashboardLayout from '../pages/dashboard/StudentDashboardLayout'; // Nova importação
 
 // Componente para proteger rotas (sem mudanças)
 const ProtectedRoute = ({ children }) => {
@@ -34,14 +38,13 @@ const AppRouter = () => {
             </Route>
           </Route>
 
-          {/* NOVAS ROTAS PARA O DASHBOARD DO ALUNO */}
+          {/* Rota principal do Dashboard do Aluno */}
           <Route
             path="/dashboard/aluno"
             element={<ProtectedRoute><StudentDashboardLayout /></ProtectedRoute>}
           >
-              {/* Página inicial do aluno */}
-              <Route index element={<div><h1>Meu Dia</h1><p>Bem-vindo ao seu Hub!</p></div>} />
-              {/* Outras rotas do aluno aqui, ex: /dashboard/aluno/edu */}
+              <Route index element={<div><h1>Meu Dia</h1><p>Bem-vindo ao seu Hub de estudos e produtividade!</p></div>} />
+              {/* Adicionar futuras rotas do aluno aqui */}
           </Route>
 
         </Routes>
