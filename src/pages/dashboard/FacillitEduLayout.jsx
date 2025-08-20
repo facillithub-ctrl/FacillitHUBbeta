@@ -13,15 +13,14 @@ const FacillitEduLayout = () => {
             <h1 className="text-3xl font-bold text-brand-dark-blue">Módulo Facillit Edu</h1>
             <p className="mt-2 text-gray-600">O cérebro da sua gestão escolar.</p>
 
-            {/* Sub-navegação do Módulo Edu */}
             <nav className="flex space-x-4 my-8 border-b pb-2">
                 <EduNavLink to="/dashboard/gestor/edu" text="Visão Geral" />
                 <EduNavLink to="/dashboard/gestor/edu/turmas" text="Gerenciar Turmas" />
+                <EduNavLink to="/dashboard/gestor/edu/convites" text="Gerenciar Convites" />
                 {/* Adicionar links para Alunos, Professores, etc. aqui */}
             </nav>
 
-            {/* O conteúdo (Visão Geral, Turmas) será renderizado aqui */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white p-6 rounded-lg shadow-md min-h-[400px]">
                 <Outlet />
             </div>
         </div>

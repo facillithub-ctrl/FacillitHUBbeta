@@ -6,13 +6,15 @@ import AuthPage from '../pages/AuthPage';
 // Dashboards Layouts
 import DashboardLayout from '../pages/dashboard/DashboardLayout';
 import StudentDashboardLayout from '../pages/dashboard/StudentDashboardLayout';
-import ProfessorDashboardLayout from '../pages/dashboard/ProfessorDashboardLayout'; // Importação
+import ProfessorDashboardLayout from '../pages/dashboard/ProfessorDashboardLayout';
 
 // Páginas
 import HomePage from '../pages/dashboard/HomePage';
 import FacillitEduLayout from '../pages/dashboard/FacillitEduLayout';
 import TurmasPage from '../pages/dashboard/TurmasPage';
-import MinhaTurmaPage from '../pages/dashboard/MinhaTurmaPage'; // Importação
+import ConvitesPage from '../pages/dashboard/ConvitesPage';
+import GerenciarTurmaPage from '../pages/dashboard/GerenciarTurmaPage'; // 1. Importar a nova página
+import MinhaTurmaPage from '../pages/dashboard/MinhaTurmaPage';
 
 const ProtectedRoute = ({ children }) => {
   const { session, loading } = useAuth();
@@ -31,16 +33,18 @@ const AppRouter = () => {
           <Route path="/dashboard/gestor" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
             <Route index element={<HomePage />} />
             <Route path="edu" element={<FacillitEduLayout />}>
-                <Route index element={<div>Visão Geral do Módulo Edu</div>} />
+                <Route index element={<div className="text-center p-8"><h2 className="text-xl font-semibold">Bem-vindo(a) à Visão Geral!</h2><p className="text-gray-500 mt-2">Selecione uma opção acima para começar.</p></div>} />
                 <Route path="turmas" element={<TurmasPage />} />
+                <Route path="convites" element={<ConvitesPage />} />
+                {/* 2. Adicionar a nova rota dinâmica */}
+                <Route path="turma/:classId" element={<GerenciarTurmaPage />} />
             </Route>
           </Route>
 
           {/* Rota do Professor */}
           <Route path="/dashboard/professor" element={<ProtectedRoute><ProfessorDashboardLayout /></ProtectedRoute>}>
             <Route index element={<MinhaTurmaPage />} />
-            <Route path="notas" element={<div>Página de Notas (em construção)</div>} />
-            <Route path="frequencia" element={<div>Página de Frequência (em construção)</div>} />
+            {/* ... outras rotas de professor */}
           </Route>
 
           {/* Rota do Aluno */}
