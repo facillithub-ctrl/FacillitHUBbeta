@@ -1,8 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { supabase } from '../../api/supabaseClient';
+import { useNotification } from '../../contexts/NotificationContext';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 
-const WelcomeScene = ({ onStart, onShowLogin }) => {
+const WelcomeScene = ({ onStart, onShowLogin, onStartWithCode }) => {
+  const [inviteCode, setInviteCode] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { showNotification } = useNotification();
+
+  const handleCodeSubmit = async (e) => {
+    e.preventDefault();
+    if (!inviteCode) {
+      showNotification('Por favor, insira um código.', 'error');
+      return;
+    }
+    setLoading(true);
+
+    // Busca o código no Supabase
+    const { data, error } = await supabase
+      .from('invites')
+      .select('*')
+      .eq('code', inviteCode.toUpperCase())
+      .eq('is_used', false)
+      .single();
+
+    if (error || !data) {
+      showNotification('Código inválido ou já utilizado.', 'error');
+    } else {
+      showNotification('Código válido! Prossiga com o cadastro.');
+      // Envia os dados do convite para o componente pai (AuthPage)
+      onStartWithCode(data);
+    }
+
+    setLoading(false);
+  };
+
   return (
     <div className="text-center space-y-10 flex flex-col h-full justify-between">
       <div>
@@ -21,15 +54,16 @@ const WelcomeScene = ({ onStart, onShowLogin }) => {
             <div className="flex-grow border-t border-gray-200"></div>
         </div>
 
-        {/* Formulário de código redesenhado */}
-        <form className="space-y-3">
+        <form onSubmit={handleCodeSubmit} className="space-y-3">
           <Input 
             id="invite-code" 
             placeholder="Insira seu código institucional" 
-            icon="tag" // Usando o novo ícone!
+            icon="tag"
+            value={inviteCode}
+            onChange={(e) => setInviteCode(e.target.value)}
           />
-          <Button variant="secondary" fullWidth={true}>
-            Entrar com código
+          <Button type="submit" variant="secondary" fullWidth={true} disabled={loading}>
+            {loading ? 'Verificando...' : 'Entrar com código'}
           </Button>
         </form>
       </div>
