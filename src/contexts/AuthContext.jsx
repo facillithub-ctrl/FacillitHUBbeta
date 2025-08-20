@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getSession = async () => {
+    const getSessionAndProfile = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
 
@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     };
 
-    getSession();
+    getSessionAndProfile();
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }) => {
         } else {
           setProfile(null);
         }
+        setLoading(false);
       }
     );
 

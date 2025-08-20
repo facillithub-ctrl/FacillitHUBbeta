@@ -6,6 +6,7 @@ import DashboardLayout from '../pages/dashboard/DashboardLayout';
 import HomePage from '../pages/dashboard/HomePage';
 import FacillitEduLayout from '../pages/dashboard/FacillitEduLayout';
 import TurmasPage from '../pages/dashboard/TurmasPage';
+import StudentDashboardLayout from '../pages/dashboard/StudentDashboardLayout'; // Nova importação
 
 // Componente para proteger rotas (sem mudanças)
 const ProtectedRoute = ({ children }) => {
@@ -26,17 +27,23 @@ const AppRouter = () => {
             path="/dashboard/gestor" 
             element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}
           >
-            {/* Páginas aninhadas dentro do DashboardLayout */}
             <Route index element={<HomePage />} />
-            
-            {/* Rota para o módulo Facillit Edu */}
             <Route path="edu" element={<FacillitEduLayout />}>
-                {/* Páginas aninhadas dentro do FacillitEduLayout */}
                 <Route index element={<div>Visão Geral do Módulo Edu</div>} />
                 <Route path="turmas" element={<TurmasPage />} />
             </Route>
-
           </Route>
+
+          {/* NOVAS ROTAS PARA O DASHBOARD DO ALUNO */}
+          <Route
+            path="/dashboard/aluno"
+            element={<ProtectedRoute><StudentDashboardLayout /></ProtectedRoute>}
+          >
+              {/* Página inicial do aluno */}
+              <Route index element={<div><h1>Meu Dia</h1><p>Bem-vindo ao seu Hub!</p></div>} />
+              {/* Outras rotas do aluno aqui, ex: /dashboard/aluno/edu */}
+          </Route>
+
         </Routes>
       </AuthProvider>
     </BrowserRouter>

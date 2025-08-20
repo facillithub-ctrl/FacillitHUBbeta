@@ -1,42 +1,49 @@
 import React, { useState } from 'react';
 import { supabase } from '../../api/supabaseClient';
 import { useNotification } from '../../contexts/NotificationContext';
-import { useNavigate } from 'react-router-dom'; // Importe o useNavigate
+import { useNavigate } from 'react-router-dom';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
-
-const SocialButton = ({ children, icon }) => (
-    <button className="flex items-center justify-center w-full py-2.5 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 transition-colors">
-        <span className="w-6 h-6 mr-3 flex items-center justify-center font-bold text-brand-cyan">
-            {icon ? icon : 'F'} 
-        </span>
-        <span className="font-medium text-gray-700">{children}</span>
-    </button>
-);
 
 const Login = ({ onShowRegister }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { showNotification } = useNotification();
-  const navigate = useNavigate(); // Inicialize o hook
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
 
-    if (error) {
-      showNotification(error.message, 'error');
-    } else {
-      showNotification('Login realizado com sucesso!');
-      navigate('/dashboard/gestor'); // << REDIRECIONAMENTO AQUI
+    if (authError) {
+      showNotification(authError.message, 'error');
+      setLoading(false);
+      return;
     }
 
+    if (authData.user) {
+        // Busca o perfil do usuário para decidir para onde redirecionar
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('profile_type')
+            .eq('id', authData.user.id)
+            .single();
+
+        showNotification('Login realizado com sucesso!');
+
+        const userType = profile?.profile_type;
+        if (userType === 'Sou aluno(a)' || userType === 'Sou vestibulando(a)') {
+            navigate('/dashboard/aluno');
+        } else {
+            navigate('/dashboard/gestor');
+        }
+    }
     setLoading(false);
   };
 
