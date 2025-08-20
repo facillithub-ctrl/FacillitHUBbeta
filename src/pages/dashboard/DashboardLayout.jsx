@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import StudentSidebar from '../../components/dashboard/StudentSidebar';
 import Header from '../../components/dashboard/Header';
+import GestorSidebar from '../../components/dashboard/GestorSidebar'; // 1. Importar a sidebar correta
 
-const StudentDashboardLayout = () => {
+const DashboardLayout = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(true); // 2. Adicionar estado de controle
+
   return (
-    <div className="flex h-screen bg-gray-50">
-      <StudentSidebar />
+    <div className="flex h-screen bg-gray-100">
+      {/* 3. Usar a GestorSidebar e passar o estado */}
+      <GestorSidebar isOpen={isSidebarOpen} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Reutilizamos o Header, mas sem a função de toggle */}
-        <Header />
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-8">
+        <Header toggleSidebar={() => setSidebarOpen(!isSidebarOpen)} />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-8">
           <Outlet />
         </main>
       </div>
@@ -18,4 +20,4 @@ const StudentDashboardLayout = () => {
   );
 };
 
-export default StudentDashboardLayout;
+export default DashboardLayout;
